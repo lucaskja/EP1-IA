@@ -1,0 +1,34 @@
+entrada (n=5) = [0,1,1,0,1]
+
+pesos com uma camada de 5 neuronios MP = [
+	[1,2,3,4,5],
+	[5,4,3,2,1],
+	[3,2,1,4,5],
+	[5.2.3.1.4],
+	[2,3,1,4,5],
+]
+
+no caso de mais de uma hidden layer faz um array com as variaveis que 
+contem as matrizes de cada camada.
+
+array de bias = [1,1,1,1,1]
+
+matriz de camadas AHL = [
+	[7,8,9,7,0],
+]
+
+cada linha da MP corresponde aos pesos do indice da AHL, por exemplo os pesos de 6 são [1,2,3,4,5],
+
+a matriz com os pesos da camada de output sera outra.
+
+matriz de pesos da camada de output GuilhermeCampos = [
+	[6,3,7,2,5],
+	[5,7,3,8,3],
+	[3.1,6,9,5]
+]
+
+cada linha da GuilhermeCampos corresponde aos pesos do indice da Armando por exemplo os pesos de 78 são [5,7,3,8,3],
+
+resultado 3 neuronios Armando = [65, 78, 98]
+
+entao para alimentar cada um:
