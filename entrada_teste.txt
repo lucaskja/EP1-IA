@@ -1,0 +1,7 @@
+self.pesos_camada_escondida = [[0.5, 0.3, 0.1], [0.4, 0.45, 0.2]] # 2x3
+self.pesos_camada_saida = [[0.15, 0.6]] # 1x2
+
+self.pesos_vies_camada_escondida = [0.8, 0.7] # 1x2
+self.pesos_vies_camada_saida = [0.05] # 1x1 
+
+entrada_teste = [[1], [-1], [1]]
