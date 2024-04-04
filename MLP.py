@@ -33,7 +33,7 @@ matriz_dados = []
 matriz_resultado = []
 
 for dados in arquivo_x:
-    # essa linha transforma-se o array complexo (arquivo_x) em um array unidimensional, por meio da função flatten#
+    #transforma-se o array complexo (arquivo_x) em um array unidimensional, por meio da função flatten
     matriz_dados.append(dados.flatten())
 
 mlp = Mlp(len(matriz_dados), len(matriz_dados[0]), 26, matriz_dados, [])
