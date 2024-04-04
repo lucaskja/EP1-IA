@@ -1,5 +1,5 @@
 import numpy as np
-import Mlp
+import mlp
 
 arquivo_x = np.load('datasets/caracteres_completo/X.npy')
 arquivo_y = np.load('datasets/caracteres_completo/Y_classe.npy')
