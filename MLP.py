@@ -8,12 +8,17 @@ class Mlp:
         self.vetor_entrada = vetor_entrada
         self.vetor_esperado_saido = vetor_esperado_saido
 
-        self.pesos_camada_entrada_para_escondida = np.random.uniform(-0.5, 0.51, [self.tamanho_camada_entrada, self.tamanho_camada_escondida])
-        self.pesos_camada_escondida_para_saida = np.random.uniform(-0.5, 0.51, [self.tamanho_camada_escondida, self.tamanho_camada_saida])
+        self.pesos_camada_entrada_para_escondida = np.load('pesos/pesos_camada_entrada_para_escondida.npy')
+        self.pesos_camada_escondida_para_saida = np.load('pesos/pesos_camada_escondida_para_saida.npy')
 
-        self.pesos_vies_camada_entrada_para_escondida = np.random.uniform(-0.5, 0.51, [1, self.tamanho_camada_escondida])
-        self.pesos_vies_camada_escondida_para_saida = np.random.uniform(-0.5, 0.51, [1, self.tamanho_camada_saida])
+        self.pesos_vies_camada_entrada_para_escondida = np.load('pesos/pesos_vies_camada_entrada_para_escondida.npy')
+        self.pesos_vies_camada_escondida_para_saida = np.load('pesos/pesos_vies_camada_escondida_para_saida.npy')
 
+        # As 4 linhas abaixo servem para gerar randomicamente os pesos das camadas de entrada, escondida e saida num intervalo de -0,5 a 0,5.
+        # self.pesos_camada_entrada_para_escondida = np.random.uniform(-0.5, 0.51, [self.tamanho_camada_entrada, self.tamanho_camada_escondida])
+        # self.pesos_camada_escondida_para_saida = np.random.uniform(-0.5, 0.51, [self.tamanho_camada_escondida, self.tamanho_camada_saida])
+        # self.pesos_vies_camada_entrada_para_escondida = np.random.uniform(-0.5, 0.51, [1, self.tamanho_camada_escondida])
+        # self.pesos_vies_camada_escondida_para_saida = np.random.uniform(-0.5, 0.51, [1, self.tamanho_camada_saida])
 
     def feedforward(self):
         self.saida_escondida = self.sigmoid(
@@ -36,7 +41,7 @@ matriz_dados = []
 matriz_resultado = []
 
 for dados in arquivo_x:
-    #transforma-se o array complexo (arquivo_x) em um array unidimensional, por meio da função flatten
+    # Transforma-se o array complexo (arquivo_x) em um array unidimensional, por meio da função flatten
     matriz_dados.append(dados.flatten())
 
 mlp = Mlp(4, 26, matriz_dados[0].reshape(-1, 1), matriz_resultado)
