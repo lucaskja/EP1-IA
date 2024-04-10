@@ -41,6 +41,9 @@ class Mlp:
     def sigmoid(self, x):
         return 1 / (1 + np.exp(-x))
 
+    def derivada_sigmoid(self, x):
+        return np.exp(-x) / np.power(1 + np.exp(-x), 2)
+
 arquivo_x = np.load('datasets/caracteres_completo/X.npy')
 arquivo_y = np.load('datasets/caracteres_completo/Y_classe.npy')
 
