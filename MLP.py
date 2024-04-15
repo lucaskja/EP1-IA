@@ -51,6 +51,13 @@ class Mlp:
         
         vetor_saida_menos_esperado = np.array(vetor_saida_esperada) - saida_rede # Realiza a operação: valor esperado na saída menos saida obtida
 
+        #Arredondamento dos valores próximos à 0 e 1 para 0 e 1 (multiplicação a partir da segunda casa decimal) para ver bits certos
+        self.acertos = 0
+        for item in vetor_saida_menos_esperado: #Usando esse vetor para somente verificar se está próximo de 0, sem precisar saber se o bit em questão é 0 ou 1
+            if int(item*100) == 0:
+                self.acertos+= 1
+        
+        
         delta_saida = vetor_saida_menos_esperado * self.derivada_sigmoid(self.soma_ponderada_camada_escondida_para_saida) # Calcula o delta da camada de saída para atualizar os pesos da camada escondida para saída
         self.termo_correcao_pesos_camada_escondida_para_saida = (
             self.saida_escondida * np.array(delta_saida * self.taxa_apredizado).reshape(-1, 1)
@@ -72,11 +79,34 @@ class Mlp:
             self.pesos_camada_entrada_para_escondida + self.termo_correcao_pesos_camada_entrada_para_escondida.T
         ) # Atualiza os pesos da camada de entrada para escondida
 
-    def treinameto(self, epocas = 1, matriz_entrada = [], matriz_saida_esperada = []):
+    def treinameto(self, epocas, matriz_entrada = [], matriz_saida_esperada = []):
+        #Array que marca quantos bits foram acertados em cada letra, usado depois para ver as letras certas
+        acertos_por_letra = []
+
+        taxa_erro_max = 0.15
+        
         for epoca in range(epocas):
+            #Quantas letras foram 100% adivinhadas pelo MLP, deve ser resetado a cada época
+            letras_acertadas = 0
+            
             for (indice, letra) in enumerate(matriz_entrada):
                 self.backpropagation(letra, matriz_saida_esperada[indice])
-        
+                #Adiciona no array a quantidade de bits acertados pelo MLP na letra que acabvou de passar pelo MLP
+                acertos_por_letra.append(self.acertos)
+
+            #Verifiqua quais letras estão totalmente corretas (onde o MLP acertou os 26 bits)
+            for letra in acertos_por_letra:
+                if letra == 26:
+                    letras_acertadas += 1
+
+            #Calcula quanto % vale uma letra do array para comparar com a taxa de erro (para uso de datasets de diferentes tamanhos)
+            porcentagem_por_letra = (100/len(acertos_por_letra))/100
+
+            #Verifica a partir de quantas letras foram acertadas se a taxa de erro está dentro do aceitável
+            if (porcentagem_por_letra * letras_acertadas) >= (1 - taxa_erro_max):
+                break
+
+            acertos_por_letra = []
             
     def sigmoid(self, x):
         return 1 / (1 + np.exp(-x))
@@ -106,4 +136,4 @@ matriz_saida_esperada= [
 ]
 
 mlp = Mlp([120, 4, 26])
-mlp.treinameto(epocas = 500, matriz_entrada = matriz_entrada_teste, matriz_saida_esperada = matriz_saida_esperada)
+mlp.treinameto(epocas = 1000, matriz_entrada = matriz_entrada_teste, matriz_saida_esperada = matriz_saida_esperada)
