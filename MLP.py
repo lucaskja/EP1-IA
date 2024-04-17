@@ -6,6 +6,8 @@ class Mlp:
         self.tamanho_camada_entrada = configuracao_mlp[0]
         self.tamanho_camada_escondida = configuracao_mlp[1]
         self.tamanho_camada_saida = configuracao_mlp[2]
+        self.erro_quadratico_medio_treinamento = 0
+        self.erro_quadratico_medio_validacao = 0
         self.taxa_apredizado = 0.5
 
         # Verificamos se já existem o arquivos de pesos, caso não existam, cria-se novos com pesos aleatórios
@@ -15,7 +17,7 @@ class Mlp:
         else:
             # As seis linhas abaixo servem para gerar randomicamente os pesos das camadas de entrada, escondida e saida num intervalo de -0,5 a 0,5.
             self.pesos_camada_entrada_para_escondida = np.random.uniform(
-                -0.5, 0.51, [self.tamanho_camada_entrada, self.tamanho_camada_escondida]
+                -0.5, 0.51, [self.tamanho_camada_entrada + 1, self.tamanho_camada_escondida]
             )
             self.pesos_camada_escondida_para_saida = np.random.uniform(
                 -0.5, 0.51, [self.tamanho_camada_escondida + 1, self.tamanho_camada_saida]
@@ -42,7 +44,7 @@ class Mlp:
         )
         self.saida = self.sigmoid(self.soma_ponderada_camada_escondida_para_saida)
 
-        return self.saida
+        return np.around(self.saida, 3)
     
     def backpropagation(self, letra, vetor_saida_esperada):
         letra = np.insert(letra, 0, 1) # Coloca 1 na primeira posição da letra referente ao bias.
@@ -51,13 +53,8 @@ class Mlp:
         
         vetor_saida_menos_esperado = np.array(vetor_saida_esperada) - saida_rede # Realiza a operação: valor esperado na saída menos saida obtida
 
-        #Arredondamento dos valores próximos à 0 e 1 para 0 e 1 (multiplicação a partir da segunda casa decimal) para ver bits certos
-        self.acertos = 0
-        for item in vetor_saida_menos_esperado: #Usando esse vetor para somente verificar se está próximo de 0, sem precisar saber se o bit em questão é 0 ou 1
-            if int(item*100) == 0:
-                self.acertos+= 1
-        
-        
+        self.erro_quadratico_medio_treinamento = (np.sum(np.power(vetor_saida_menos_esperado, 2))) / 2 + self.erro_quadratico_medio_treinamento
+
         delta_saida = vetor_saida_menos_esperado * self.derivada_sigmoid(self.soma_ponderada_camada_escondida_para_saida) # Calcula o delta da camada de saída para atualizar os pesos da camada escondida para saída
         self.termo_correcao_pesos_camada_escondida_para_saida = (
             self.saida_escondida * np.array(delta_saida * self.taxa_apredizado).reshape(-1, 1)
@@ -80,34 +77,13 @@ class Mlp:
         ) # Atualiza os pesos da camada de entrada para escondida
 
     def treinameto(self, epocas, matriz_entrada = [], matriz_saida_esperada = []):
-        #Array que marca quantos bits foram acertados em cada letra, usado depois para ver as letras certas
-        acertos_por_letra = []
-
-        taxa_erro_max = 0.15
-        
         for epoca in range(epocas):
-            #Quantas letras foram 100% adivinhadas pelo MLP, deve ser resetado a cada época
-            letras_acertadas = 0
-            
             for (indice, letra) in enumerate(matriz_entrada):
                 self.backpropagation(letra, matriz_saida_esperada[indice])
-                #Adiciona no array a quantidade de bits acertados pelo MLP na letra que acabvou de passar pelo MLP
-                acertos_por_letra.append(self.acertos)
+            print('erro_quadratico_medio_treinamento', self.erro_quadratico_medio_treinamento / len(matriz_entrada), epoca)
+            print('erro_quadratico_medio_validacao', self.erro_quadratico_medio_validacao / len(matriz_saida_validacao), epoca)
+            self.erro_quadratico_medio = 0
 
-            #Verifiqua quais letras estão totalmente corretas (onde o MLP acertou os 26 bits)
-            for letra in acertos_por_letra:
-                if letra == 26:
-                    letras_acertadas += 1
-
-            #Calcula quanto % vale uma letra do array para comparar com a taxa de erro (para uso de datasets de diferentes tamanhos)
-            porcentagem_por_letra = (100/len(acertos_por_letra))/100
-
-            #Verifica a partir de quantas letras foram acertadas se a taxa de erro está dentro do aceitável
-            if (porcentagem_por_letra * letras_acertadas) >= (1 - taxa_erro_max):
-                break
-
-            acertos_por_letra = []
-            
     def sigmoid(self, x):
         return 1 / (1 + np.exp(-x))
 
@@ -130,10 +106,26 @@ matriz_entrada_teste = [
     matriz_dados[1]
 ]
 
-matriz_saida_esperada= [
+matriz_saida_esperada = [
     arquivo_y[0],
     arquivo_y[1]
 ]
 
+matriz_entrada_validacao = [
+    matriz_dados[988],
+    matriz_dados[989]
+]
+
+matriz_saida_validacao = [
+    arquivo_y[988],
+    arquivo_y[989]
+]
+
 mlp = Mlp([120, 4, 26])
-mlp.treinameto(epocas = 1000, matriz_entrada = matriz_entrada_teste, matriz_saida_esperada = matriz_saida_esperada)
+mlp.treinameto(
+    epocas = 1000,
+    matriz_entrada = matriz_entrada_teste,
+    matriz_saida_esperada = matriz_saida_esperada,
+    matriz_entrada_validacao = matriz_entrada_validacao,
+    matriz_saida_validacao = matriz_saida_validacao
+)
