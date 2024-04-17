@@ -1,3 +1,20 @@
+/*********************************************************************/
+/**   ACH2016  - Inteligência Aritifical                            **/
+/**   EACH-USP - Primeiro Semestre de 2024                          **/
+/**   04 - Sarajane Marques Peres                                   **/
+/**                                                                 **/
+/**   Primeiro Exercicio-Programa                                   **/
+/**                                                                 **/
+/**   Armando Augusto Marchini Vidal            13673072            **/
+/**   Gabriel dos Santos Nascimento             12732792            **/
+/**   Guilherme Campos Silva Lemes Prestes      13720460            **/
+/**   Guilherme Faria do Nascimento             12745282            **/
+/**   Luan Pereira Pinheiro                     13672471            **/
+/**   Lucas Kledeglau Jahchan Alves             13732182            **/
+/**   GitHub: https://github.com/lucaskja/EP1-IA                    **/
+/**                                                                 **/
+/*********************************************************************/
+
 import numpy as np
 
 class MlpTeste:
