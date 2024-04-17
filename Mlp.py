@@ -16,6 +16,7 @@
 /*********************************************************************/
 
 import numpy as np
+import random
 import os
 
 class Mlp:
@@ -101,9 +102,13 @@ class Mlp:
         ) # Atualiza os pesos da camada de entrada para escondida
 
     def treinameto(self, epocas, matriz_entrada = [], matriz_saida_esperada = [], matriz_entrada_validacao = [], matriz_saida_esperada_validacao = []):
+        matriz_referencia = [i for i in range(len(matriz_entrada))]
+        
         for epoca in range(epocas):
-            for (indice, letra) in enumerate(matriz_entrada):
-                self.backpropagation(letra, matriz_saida_esperada[indice])
+            random.shuffle(matriz_referencia)
+            
+            for i in range(len(matriz_referencia)):
+                self.backpropagation(matriz_entrada[i], matriz_saida_esperada[i])
 
             erro_quadratico_medio_treinamento = self.calculo_erro_quadratico_medio(matriz_entrada_validacao, matriz_saida_validacao)
             erro_quadratico_medico_validacao = self.calculo_erro_quadratico_medio(matriz_entrada, matriz_saida_esperada)
