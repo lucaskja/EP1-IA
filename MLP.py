@@ -6,8 +6,6 @@ class Mlp:
         self.tamanho_camada_entrada = configuracao_mlp[0]
         self.tamanho_camada_escondida = configuracao_mlp[1]
         self.tamanho_camada_saida = configuracao_mlp[2]
-        self.erro_quadratico_medio_treinamento = 0
-        self.erro_quadratico_medio_validacao = 0
         self.taxa_apredizado = 0.5
 
         # Verificamos se já existem o arquivos de pesos, caso não existam, cria-se novos com pesos aleatórios
@@ -45,13 +43,22 @@ class Mlp:
         self.saida = self.sigmoid(self.soma_ponderada_camada_escondida_para_saida)
 
         return np.around(self.saida, 3)
+
+    def calculo_erro_quadratico_medio(self, matriz_entrada, matriz_saida_esperada):
+        total_erro = 0
+
+        for letra, vetor_saida_esperado in zip(matriz_entrada, matriz_saida_esperada):
+            letra_com_bias = np.insert(letra, 0, 1)
+            saida_rede = np.array(self.feedforward(letra_com_bias))
+            erro_saida = np.array(vetor_saida_esperado) - saida_rede
+            total_erro += np.sum(np.power(erro_saida, 2))
+
+        return total_erro / len(matriz_entrada)
     
     def backpropagation(self, letra, vetor_saida_esperada):
         letra = np.insert(letra, 0, 1) # Coloca 1 na primeira posição da letra referente ao bias.
-
-        saida_rede = np.array(self.feedforward(letra))
         
-        vetor_saida_menos_esperado = np.array(vetor_saida_esperada) - saida_rede # Realiza a operação: valor esperado na saída menos saida obtida
+        vetor_saida_menos_esperado = np.array(vetor_saida_esperada) - np.array(self.feedforward(letra)) # Realiza a operação: valor esperado na saída menos saida obtida
 
         self.erro_quadratico_medio_treinamento = (np.sum(np.power(vetor_saida_menos_esperado, 2))) / 2 + self.erro_quadratico_medio_treinamento
 
@@ -76,13 +83,16 @@ class Mlp:
             self.pesos_camada_entrada_para_escondida + self.termo_correcao_pesos_camada_entrada_para_escondida.T
         ) # Atualiza os pesos da camada de entrada para escondida
 
-    def treinameto(self, epocas, matriz_entrada = [], matriz_saida_esperada = []):
+    def treinameto(self, epocas, matriz_entrada = [], matriz_saida_esperada = [], matriz_entrada_validacao = [], matriz_saida_esperada_validacao = []):
         for epoca in range(epocas):
             for (indice, letra) in enumerate(matriz_entrada):
                 self.backpropagation(letra, matriz_saida_esperada[indice])
-            print('erro_quadratico_medio_treinamento', self.erro_quadratico_medio_treinamento / len(matriz_entrada), epoca)
-            print('erro_quadratico_medio_validacao', self.erro_quadratico_medio_validacao / len(matriz_saida_validacao), epoca)
-            self.erro_quadratico_medio = 0
+
+            erro_quadratico_medio_treinamento = self.calculo_erro_quadratico_medio(matriz_entrada_validacao, matriz_saida_validacao)
+            erro_quadratico_medico_validacao = self.calculo_erro_quadratico_medio(matriz_entrada, matriz_saida_esperada)
+
+            if np.abs(erro_quadratico_medico_validacao - erro_quadratico_medio_treinamento) > .2:
+                break # Assim que entrar nessa condição devemos parar, pois a rede está começando a ficar super treinada
 
     def sigmoid(self, x):
         return 1 / (1 + np.exp(-x))
