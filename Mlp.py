@@ -78,8 +78,6 @@ class Mlp:
         
         vetor_saida_menos_esperado = np.array(vetor_saida_esperada) - np.array(self.feedforward(letra)) # Realiza a operação: valor esperado na saída menos saida obtida
 
-        self.erro_quadratico_medio_treinamento = (np.sum(np.power(vetor_saida_menos_esperado, 2))) / 2 + self.erro_quadratico_medio_treinamento
-
         delta_saida = vetor_saida_menos_esperado * self.derivada_sigmoid(self.soma_ponderada_camada_escondida_para_saida) # Calcula o delta da camada de saída para atualizar os pesos da camada escondida para saída
         self.termo_correcao_pesos_camada_escondida_para_saida = (
             self.saida_escondida * np.array(delta_saida * self.taxa_apredizado).reshape(-1, 1)
@@ -159,5 +157,5 @@ mlp.treinameto(
     matriz_entrada = matriz_entrada_teste,
     matriz_saida_esperada = matriz_saida_esperada,
     matriz_entrada_validacao = matriz_entrada_validacao,
-    matriz_saida_validacao = matriz_saida_validacao
+    matriz_saida_esperada_validacao = matriz_saida_validacao
 )
