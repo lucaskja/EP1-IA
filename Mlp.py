@@ -131,31 +131,11 @@ for dados in arquivo_x:
     letra[letra == -1] = 0
     matriz_dados.append(letra)
 
-matriz_entrada_teste = [
-    matriz_dados[0],
-    matriz_dados[1]
-]
-
-matriz_saida_esperada = [
-    arquivo_y[0],
-    arquivo_y[1]
-]
-
-matriz_entrada_validacao = [
-    matriz_dados[988],
-    matriz_dados[989]
-]
-
-matriz_saida_validacao = [
-    arquivo_y[988],
-    arquivo_y[989]
-]
-
 mlp = Mlp([120, 4, 26])
 mlp.treinameto(
     epocas = 1000,
-    matriz_entrada = matriz_entrada_teste,
-    matriz_saida_esperada = matriz_saida_esperada,
-    matriz_entrada_validacao = matriz_entrada_validacao,
-    matriz_saida_esperada_validacao = matriz_saida_validacao
+    matriz_entrada = matriz_dados[:858],
+    matriz_saida_esperada = arquivo_y[:858],
+    matriz_entrada_validacao = matriz_dados[858:1196],
+    matriz_saida_esperada_validacao = arquivo_y[858:1196]
 )
