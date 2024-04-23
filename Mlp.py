@@ -111,9 +111,6 @@ class Mlp:
             erro_quadratico_medio_treinamento = self.calculo_erro_quadratico_medio(matriz_entrada_validacao, matriz_saida_validacao)
             erro_quadratico_medico_validacao = self.calculo_erro_quadratico_medio(matriz_entrada, matriz_saida_esperada)
 
-            if np.abs(erro_quadratico_medico_validacao - erro_quadratico_medio_treinamento) > .2:
-                break # Assim que entrar nessa condição devemos parar, pois a rede está começando a ficar super treinada
-
     def sigmoid(self, x):
         return 1 / (1 + np.exp(-x))
 
