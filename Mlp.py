@@ -16,6 +16,7 @@
 #*********************************************************************
 
 import numpy as np
+import matplotlib.pyplot as plt
 import random
 import os
 
@@ -101,15 +102,25 @@ class Mlp:
 
     def treinameto(self, epocas, matriz_entrada = [], matriz_saida_esperada = [], matriz_entrada_validacao = [], matriz_saida_esperada_validacao = []):
         matriz_referencia = [i for i in range(len(matriz_entrada))]
+        erro_quadratico_medio_treinamento = []
+        erro_quadratico_medico_validacao = []
         
         for epoca in range(epocas):
             random.shuffle(matriz_referencia)
             
             for i in range(len(matriz_referencia)):
-                self.backpropagation(matriz_entrada[i], matriz_saida_esperada[i])
+                # print(matriz_referencia[i], arquivo_y[matriz_referencia[i]])
+                self.backpropagation(matriz_entrada[matriz_referencia[i]], matriz_saida_esperada[matriz_referencia[i]])
 
-            erro_quadratico_medio_treinamento = self.calculo_erro_quadratico_medio(matriz_entrada_validacao, matriz_saida_validacao)
-            erro_quadratico_medico_validacao = self.calculo_erro_quadratico_medio(matriz_entrada, matriz_saida_esperada)
+            erro_quadratico_medio_treinamento.append(self.calculo_erro_quadratico_medio(matriz_entrada, matriz_saida_esperada)) 
+            erro_quadratico_medico_validacao.append(
+                self.calculo_erro_quadratico_medio(matriz_entrada_validacao, matriz_saida_esperada_validacao)
+            )
+
+        t = np.linspace(0, epocas, epocas)
+        plt.plot(t, erro_quadratico_medio_treinamento, 'r')
+        plt.plot(t, erro_quadratico_medico_validacao, 'b')
+        plt.show()
 
     def sigmoid(self, x):
         return 1 / (1 + np.exp(-x))
@@ -128,11 +139,16 @@ for dados in arquivo_x:
     letra[letra == -1] = 0
     matriz_dados.append(letra)
 
-mlp = Mlp([120, 4, 26])
+mlp = Mlp([120, 20, 26])
+
+print(mlp.feedforward(np.insert(matriz_dados[1325], 0, 1)))
+
 mlp.treinameto(
-    epocas = 1000,
+    epocas = 50,
     matriz_entrada = matriz_dados[:858],
     matriz_saida_esperada = arquivo_y[:858],
     matriz_entrada_validacao = matriz_dados[858:1196],
     matriz_saida_esperada_validacao = arquivo_y[858:1196]
 )
+
+print(mlp.feedforward(np.insert(matriz_dados[1325], 0, 1)))
