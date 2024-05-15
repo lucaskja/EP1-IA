@@ -27,22 +27,27 @@ class Mlp:
         self.tamanho_camada_saida = configuracao_mlp[2]
         self.taxa_apredizado = 0.5
 
-        # Verificamos se já existem o arquivos de pesos, caso não existam, cria-se novos com pesos aleatórios
-        if os.path.exists('pesos/pesos_camada_entrada_para_escondida.npy') and os.path.exists('pesos/pesos_camada_escondida_para_saida.npy'):
+        # Verificamos se já existe o arquivo de pesos para a camada escondida. Caso não exista, cria-se um novo com pesos aleatórios
+        if os.path.exists('pesos/pesos_camada_entrada_para_escondida.npy'):
             self.pesos_camada_entrada_para_escondida = np.load('pesos/pesos_camada_entrada_para_escondida.npy')
+        else:
+            # Geramos randomicamente os pesos da camada num intervalo de -0,5 a 0,5.
+            self.pesos_camada_entrada_para_escondida = np.random.uniform(
+                -0.5, 0.5, [self.tamanho_camada_entrada + 1, self.tamanho_camada_escondida] # Adicionamos 1 ao tamanho da camada de entrada para considerar o bias
+            )
+            # Guardamos em arquivos a matriz de pesos gerados para a camada
+            np.save('pesos/pesos_camada_entrada_para_escondida.npy', self.pesos_camada_entrada_para_escondida)
+
+        # Verificamos se já existe o arquivo de pesos para a camada de saída. Caso não exista, cria-se um novo com pesos aleatórios
+        if os.path.exists('pesos/pesos_camada_escondida_para_saida.npy'):
             self.pesos_camada_escondida_para_saida = np.load('pesos/pesos_camada_escondida_para_saida.npy')
         else:
-            # As seis linhas abaixo servem para gerar randomicamente os pesos das camadas de entrada, escondida e saida num intervalo de -0,5 a 0,5.
-            self.pesos_camada_entrada_para_escondida = np.random.uniform(
-                -0.5, 0.51, [self.tamanho_camada_entrada + 1, self.tamanho_camada_escondida]
-            )
+            # Geramos randomicamente os pesos da camada num intervalo de -0,5 a 0,5.
             self.pesos_camada_escondida_para_saida = np.random.uniform(
-                -0.5, 0.51, [self.tamanho_camada_escondida + 1, self.tamanho_camada_saida]
+                -0.5, 0.5, [self.tamanho_camada_escondida + 1, self.tamanho_camada_saida] # Adicionamos 1 ao tamanho da camada escondida para considerar o bias
             )
-
-            # As linhas duas abaixo servem para guardar em arquivos a matrix de pesos gerados para cada camada
-            np.save('pesos/pesos_camada_entrada_para_escondida.npy', self.pesos_camada_entrada_para_escondida)
-            np.save('pesos/pesos_camada_escondida_para_saida.npy', self.pesos_camada_escondida_para_saida)
+            # Guardamos em arquivos a matriz de pesos gerados para a camada
+            np.save('pesos/pesos_camada_escondida.npy', self.pesos_camada_escondida_para_saida)
 
     def feedforward(self, letra):
         self.soma_ponderada_camada_entrada_para_escondida = np.dot(
