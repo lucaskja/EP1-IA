@@ -134,9 +134,9 @@ arquivo_y = np.load('datasets/caracteres_completo/Y_classe.npy')
 matriz_dados = []
 
 for dados in arquivo_x:
-    # Transforma-se o array complexo (arquivo_x) em um array unidimensional, por meio da função flatten
+    # Transforma-se o array complexo (cada elemento do arquivo_x - uma letra) em um array unidimensional, por meio da função flatten
     letra = dados.flatten()
-    letra[letra == -1] = 0
+    letra[letra == -1] = 0 # Substitui-se os valores -1 por 0
     matriz_dados.append(letra)
 
 mlp = Mlp([120, 20, 26])
