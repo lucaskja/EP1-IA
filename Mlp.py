@@ -49,23 +49,30 @@ class Mlp:
             # Guardamos em arquivos a matriz de pesos gerados para a camada
             np.save('pesos/pesos_camada_escondida.npy', self.pesos_camada_escondida_para_saida)
 
-    def feedforward(self, letra):
+    def feedforward(self, letra_com_bias):
+        # Calcula a soma ponderada da camada de entrada para a camada escondida com multiplicação de matrizes
         self.soma_ponderada_camada_entrada_para_escondida = np.dot(
             self.pesos_camada_entrada_para_escondida.T,
-            letra
+            letra_com_bias
         )
-        self.saida_escondida = np.insert(
+
+        # Calcula a saída da camada escondida com a função de ativação sigmoid
+        self.saida_escondida_com_bias = np.insert(
             self.sigmoid(self.soma_ponderada_camada_entrada_para_escondida),
             0,
             1,
         )
 
+        # Calcula a soma ponderada da camada escondida para a camada de saída com multiplicação de matrizes
         self.soma_ponderada_camada_escondida_para_saida = np.dot(
             self.pesos_camada_escondida_para_saida.T,
-            self.saida_escondida
+            self.saida_escondida_com_bias
         )
+
+        # Calcula a saída da camada de saída com a função de ativação sigmoid
         self.saida = self.sigmoid(self.soma_ponderada_camada_escondida_para_saida)
 
+        # Retorna a saída da rede neural com arredondamento de 3 casas decimais
         return np.around(self.saida, 3)
 
     def calculo_erro_quadratico_medio(self, matriz_entrada, matriz_saida_esperada):
@@ -80,13 +87,13 @@ class Mlp:
         return total_erro / len(matriz_entrada)
     
     def backpropagation(self, letra, vetor_saida_esperada):
-        letra = np.insert(letra, 0, 1) # Coloca 1 na primeira posição da letra referente ao bias.
+        letra_com_bias = np.insert(letra, 0, 1) # Coloca 1 na primeira posição da letra referente ao bias.
         
-        vetor_saida_menos_esperado = np.array(vetor_saida_esperada) - np.array(self.feedforward(letra)) # Realiza a operação: valor esperado na saída menos saida obtida
+        vetor_saida_menos_esperado = np.array(vetor_saida_esperada) - np.array(self.feedforward(letra_com_bias)) # Realiza a operação: valor esperado na saída menos saida obtida
 
         delta_saida = vetor_saida_menos_esperado * self.derivada_sigmoid(self.soma_ponderada_camada_escondida_para_saida) # Calcula o delta da camada de saída para atualizar os pesos da camada escondida para saída
         self.termo_correcao_pesos_camada_escondida_para_saida = (
-            self.saida_escondida * np.array(delta_saida * self.taxa_apredizado).reshape(-1, 1)
+            self.saida_escondida_com_bias * np.array(delta_saida * self.taxa_apredizado).reshape(-1, 1)
         ) # Calcula o termo de correção para cada peso da camada escondida para saída
 
         delta_escondida = (
@@ -94,7 +101,7 @@ class Mlp:
             * self.derivada_sigmoid(self.soma_ponderada_camada_entrada_para_escondida)
         )
         self.termo_correcao_pesos_camada_entrada_para_escondida = (
-            letra * np.array(delta_escondida * self.taxa_apredizado).reshape(-1, 1)
+            letra_com_bias * np.array(delta_escondida * self.taxa_apredizado).reshape(-1, 1)
         )
 
         self.pesos_camada_escondida_para_saida = (
