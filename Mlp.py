@@ -56,7 +56,7 @@ class Mlp:
             letra_com_bias
         )
 
-        # Calcula a saída da camada escondida com a função de ativação sigmoid
+        # Calcula a saída da camada escondida com a função de ativação sigmoid e adiciona 1 no índice 0 para o bias
         self.saida_escondida_com_bias = np.insert(
             self.sigmoid(self.soma_ponderada_camada_entrada_para_escondida),
             0,
