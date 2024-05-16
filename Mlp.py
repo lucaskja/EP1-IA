@@ -112,7 +112,7 @@ class Mlp:
             self.pesos_camada_entrada_para_escondida + self.termo_correcao_pesos_camada_entrada_para_escondida.T
         ) # Atualiza os pesos da camada de entrada para escondida
 
-    def treinameto(self, epocas, matriz_entrada = [], matriz_saida_esperada = [], matriz_entrada_validacao = [], matriz_saida_esperada_validacao = []):
+    def treinamento(self, epocas, matriz_entrada = [], matriz_saida_esperada = [], matriz_entrada_validacao = [], matriz_saida_esperada_validacao = []):
         matriz_referencia = [i for i in range(len(matriz_entrada))]
         erro_quadratico_medio_treinamento = []
         erro_quadratico_medico_validacao = []
@@ -155,7 +155,7 @@ mlp = Mlp([120, 20, 26])
 
 print(mlp.feedforward(np.insert(matriz_dados[1325], 0, 1)))
 
-mlp.treinameto(
+mlp.treinamento(
     epocas = 50,
     matriz_entrada = matriz_dados[:858],
     matriz_saida_esperada = arquivo_y[:858],
